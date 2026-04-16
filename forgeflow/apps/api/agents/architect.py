@@ -1,30 +1,32 @@
 import json
 from services.llm import chat
+from services.json_llm import AGENT_JSON_APPENDIX, parse_llm_json_object
 from graph.state import WorkflowState
 
-SYSTEM = """You are a senior software architect designing an MVP system.
+SYSTEM = f"""You are a senior software architect designing an MVP system.
 Return ONLY valid JSON with this exact shape:
-{
+{{
   "overview": "2-3 sentence system description",
   "components": [
-    {"name": "component name", "role": "what it does", "technology": "tech used"}
+    {{"name": "component name", "role": "what it does", "technology": "tech used"}}
   ],
   "db_schema": [
-    {
+    {{
       "table": "table_name",
       "columns": [
-        {"name": "col", "type": "TEXT|INTEGER|BOOLEAN|TIMESTAMP|UUID", "notes": "PK / FK / etc"}
+        {{"name": "col", "type": "TEXT|INTEGER|BOOLEAN|TIMESTAMP|UUID", "notes": "PK / FK / etc"}}
       ]
-    }
+    }}
   ],
   "api_routes": [
-    {"method": "GET|POST|PUT|DELETE|PATCH", "path": "/api/...", "description": "what it does"}
+    {{"method": "GET|POST|PUT|DELETE|PATCH", "path": "/api/...", "description": "what it does"}}
   ],
   "data_flow": "brief description of how data moves through the system",
   "tech_decisions": [
-    {"decision": "what was chosen", "reason": "why"}
+    {{"decision": "what was chosen", "reason": "why"}}
   ]
-}"""
+}}
+{AGENT_JSON_APPENDIX}"""
 
 async def architect_agent(state: WorkflowState) -> WorkflowState:
     scope = state.get("scope") or {}
@@ -36,15 +38,18 @@ Product type: {parsed.get('product_type', 'web app')}
 
 Design the system architecture for this MVP.
 """
-    raw = await chat([
-        {"role": "system", "content": SYSTEM},
-        {"role": "user", "content": user_msg},
-    ], temperature=0.3)
+    raw = await chat(
+        [
+            {"role": "system", "content": SYSTEM},
+            {"role": "user", "content": user_msg},
+        ],
+        temperature=0.3,
+        json_mode=True,
+    )
 
     try:
-        clean = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
-        architecture = json.loads(clean)
-    except Exception:
+        architecture = parse_llm_json_object(raw)
+    except ValueError:
         architecture = {"raw": raw, "parse_error": True}
 
     return {**state, "architecture": architecture, "current_step": "architect_done"}

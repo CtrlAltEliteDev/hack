@@ -1,0 +1,455 @@
+{
+  "parsed_input": {
+    "product_type": "SaaS",
+    "core_problem": "Recruiters spend a lot of time watching and re-watching video interviews to assess candidate skills, which is time-consuming and inefficient.",
+    "target_users": "Recruiters and hiring managers who conduct video interviews as part of their hiring process.",
+    "key_features": [
+      "AI-powered video interview summarization",
+      "Automated candidate scoring"
+    ],
+    "tech_stack": [
+      "Next.js",
+      "FastAPI",
+      "Postgres"
+    ],
+    "timeline_days": 5,
+    "team_size": 1,
+    "constraints": [],
+    "complexity": "medium"
+  },
+  "scope": {
+    "mvp_name": "Video Interview Assistant",
+    "one_liner": "A recruiter SaaS that uses AI to summarize video interviews and score candidates automatically.",
+    "in_scope": [
+      "Basic video interview upload and storage",
+      "AI-powered video interview summarization",
+      "Automated candidate scoring with a simple ranking system"
+    ],
+    "out_of_scope": [
+      "Advanced candidate scoring with weighted criteria",
+      "Integration with popular HR systems",
+      "User management and authentication"
+    ],
+    "milestones": [
+      {
+        "day": 1,
+        "title": "Day 1: Frontend Setup and Video Upload",
+        "deliverables": [
+          "Set up Next.js frontend with basic UI",
+          "Implement video upload functionality"
+        ]
+      },
+      {
+        "day": 2,
+        "title": "AI-powered Video Summarization",
+        "deliverables": [
+          "Integrate FastAPI with a basic AI model for video summarization"
+        ]
+      },
+      {
+        "day": 3,
+        "title": "Automated Candidate Scoring",
+        "deliverables": [
+          "Implement automated candidate scoring with a simple ranking system"
+        ]
+      },
+      {
+        "day": 4,
+        "title": "Database Setup and Data Storage",
+        "deliverables": [
+          "Set up Postgres database for storing video interview data"
+        ]
+      },
+      {
+        "day": 5,
+        "title": "Final Testing and Deployment",
+        "deliverables": [
+          "Perform final testing and debugging",
+          "Deploy the MVP to a cloud platform"
+        ]
+      }
+    ],
+    "success_metrics": [
+      "Number of video interviews uploaded and processed",
+      "Accuracy of AI-powered video summarization",
+      "Time saved by recruiters using the automated candidate scoring system"
+    ],
+    "risks": [
+      "Difficulty in integrating AI model with video data",
+      "Limited scalability of the MVP due to single team member",
+      "Potential biases in the automated candidate scoring system"
+    ]
+  },
+  "architecture": {
+    "overview": "The Video Interview Assistant MVP is a SaaS application that uses AI to summarize video interviews and score candidates automatically. It allows recruiters to upload and store video interviews, and automatically generates a summary and score for each candidate. The MVP is designed to be scalable and efficient, with a focus on basic functionality and ease of use.",
+    "components": [
+      {
+        "name": "Frontend",
+        "role": "Handles user interaction and video upload",
+        "technology": "Next.js"
+      },
+      {
+        "name": "Backend",
+        "role": "Handles video summarization, candidate scoring, and data storage",
+        "technology": "FastAPI"
+      },
+      {
+        "name": "Database",
+        "role": "Stores video interview data and candidate information",
+        "technology": "Postgres"
+      },
+      {
+        "name": "AI Model",
+        "role": "Provides video summarization and candidate scoring functionality",
+        "technology": "Integrated with FastAPI"
+      }
+    ],
+    "db_schema": [
+      {
+        "table": "videos",
+        "columns": [
+          {
+            "name": "id",
+            "type": "UUID",
+            "notes": "Primary Key"
+          },
+          {
+            "name": "title",
+            "type": "TEXT",
+            "notes": "Video title"
+          },
+          {
+            "name": "description",
+            "type": "TEXT",
+            "notes": "Video description"
+          },
+          {
+            "name": "file",
+            "type": "BLOB",
+            "notes": "Video file"
+          }
+        ]
+      },
+      {
+        "table": "candidates",
+        "columns": [
+          {
+            "name": "id",
+            "type": "UUID",
+            "notes": "Primary Key"
+          },
+          {
+            "name": "name",
+            "type": "TEXT",
+            "notes": "Candidate name"
+          },
+          {
+            "name": "email",
+            "type": "TEXT",
+            "notes": "Candidate email"
+          },
+          {
+            "name": "video_id",
+            "type": "UUID",
+            "notes": "Foreign Key referencing the videos table"
+          }
+        ]
+      },
+      {
+        "table": "summaries",
+        "columns": [
+          {
+            "name": "id",
+            "type": "UUID",
+            "notes": "Primary Key"
+          },
+          {
+            "name": "video_id",
+            "type": "UUID",
+            "notes": "Foreign Key referencing the videos table"
+          },
+          {
+            "name": "summary",
+            "type": "TEXT",
+            "notes": "Video summary"
+          }
+        ]
+      },
+      {
+        "table": "scores",
+        "columns": [
+          {
+            "name": "id",
+            "type": "UUID",
+            "notes": "Primary Key"
+          },
+          {
+            "name": "candidate_id",
+            "type": "UUID",
+            "notes": "Foreign Key referencing the candidates table"
+          },
+          {
+            "name": "score",
+            "type": "INTEGER",
+            "notes": "Candidate score"
+          }
+        ]
+      }
+    ],
+    "api_routes": [
+      {
+        "method": "POST",
+        "path": "/api/videos",
+        "description": "Upload a new video"
+      },
+      {
+        "method": "GET",
+        "path": "/api/videos",
+        "description": "Retrieve a list of all videos"
+      },
+      {
+        "method": "GET",
+        "path": "/api/videos/{id}",
+        "description": "Retrieve a single video by ID"
+      },
+      {
+        "method": "POST",
+        "path": "/api/candidates",
+        "description": "Create a new candidate"
+      },
+      {
+        "method": "GET",
+        "path": "/api/candidates",
+        "description": "Retrieve a list of all candidates"
+      },
+      {
+        "method": "GET",
+        "path": "/api/candidates/{id}",
+        "description": "Retrieve a single candidate by ID"
+      },
+      {
+        "method": "POST",
+        "path": "/api/summaries",
+        "description": "Generate a summary for a video"
+      },
+      {
+        "method": "GET",
+        "path": "/api/summaries",
+        "description": "Retrieve a list of all summaries"
+      },
+      {
+        "method": "GET",
+        "path": "/api/summaries/{id}",
+        "description": "Retrieve a single summary by ID"
+      },
+      {
+        "method": "POST",
+        "path": "/api/scores",
+        "description": "Assign a score to a candidate"
+      },
+      {
+        "method": "GET",
+        "path": "/api/scores",
+        "description": "Retrieve a list of all scores"
+      },
+      {
+        "method": "GET",
+        "path": "/api/scores/{id}",
+        "description": "Retrieve a single score by ID"
+      }
+    ],
+    "data_flow": "The system architecture is designed to handle the following data flow:\n\n1. The frontend sends a request to the backend to upload a new video.\n2. The backend stores the video in the database and generates a summary using the AI model.\n3. The backend assigns a score to the candidate based on the summary.\n4. The backend sends the summary and score back to the frontend for display.",
+    "tech_decisions": [
+      {
+        "decision": "Next.js for frontend development",
+        "reason": "Next.js provides a fast and efficient way to build server-side rendered applications with a focus on performance and scalability."
+      },
+      {
+        "decision": "FastAPI for backend development",
+        "reason": "FastAPI is a modern, fast (high-performance), web framework for building APIs with Python 3.7+ based on standard Python type hints."
+      },
+      {
+        "decision": "Postgres for database management",
+        "reason": "Postgres is a powerful, open-source relational database management system that provides a robust and scalable solution for storing and managing data."
+      },
+      {
+        "decision": "Integrated AI model for video summarization and candidate scoring",
+        "reason": "The AI model provides a fast and efficient way to generate summaries and scores, reducing the computational load on the backend and improving overall system performance."
+      }
+    ]
+  },
+  "scaffold": {
+    "folder_tree": "video-interview-assistant/\n\tfrontend/\n\t\tcomponents/\n\t\t\tVideoUpload.js\n\t\t\tSummaryDisplay.js\n\t\tpages/\n\t\t\thome.js\n\t\t\tvideos/\n\t\t\t\t[index].js\n\t\t\t\t[id].js\n\t\t\tcandidates/\n\t\t\t\t[index].js\n\t\t\t\t[id].js\n\t\t\tsummaries/\n\t\t\t\t[index].js\n\t\t\t\t[id].js\n\t\t\tscores/\n\t\t\t\t[index].js\n\t\t\t\t[id].js\n\t\tapi/\n\t\t\tvideo.js\n\t\t\tcandidate.js\n\t\t\tsummary.js\n\t\t\tscore.js\n\tbackend/\n\t\tmain.py\n\t\tmodels/\n\t\t\tvideo_model.py\n\t\t\tcandidate_model.py\n\t\t\tsummary_model.py\n\t\t\tscore_model.py\n\t\troutes/\n\t\t\tvideo_routes.py\n\t\t\tcandidate_routes.py\n\t\t\tsummary_routes.py\n\t\t\tscore_routes.py\n\t\tdatabase.py\n\t\trequirements.txt\n\tdatabase_setup.sql\n",
+    "key_files": [
+      {
+        "path": "frontend/components/VideoUpload.js",
+        "description": "Handles video upload functionality",
+        "starter_code": "import React, { useState } from 'react';\n\nconst VideoUpload = () => {\n  const [video, setVideo] = useState(null);\n\n  const handleVideoChange = (event) => {\n    setVideo(event.target.files[0]);\n  };\n\n  const handleUpload = () => {\n    // Implement video upload logic here\n  };\n\n  return (\n    <div>\n      <input type='file' onChange={handleVideoChange} />\n      <button onClick={handleUpload}>Upload Video</button>\n    </div>\n  );\n};\n\nexport default VideoUpload;"
+      },
+      {
+        "path": "backend/main.py",
+        "description": "Main application entry point",
+        "starter_code": "from fastapi import FastAPI\nfrom fastapi.responses import JSONResponse\nfrom fastapi.requests import Request\n\nfrom routes.video_routes import video_router\nfrom routes.candidate_routes import candidate_router\nfrom routes.summary_routes import summary_router\nfrom routes.score_routes import score_router\n\napp = FastAPI()\n\napp.include_router(video_router)\napp.include_router(candidate_router)\napp.include_router(summary_router)\napp.include_router(score_router)\n\n@app.get('/')\nasync def read_root():\n    return JSONResponse(content={'message': 'Hello World!'}, media_type='application/json')\n\nif __name__ == '__main__':\n    import uvicorn\n    uvicorn.run(app, host='0.0.0.0', port=8000)"
+      },
+      {
+        "path": "backend/database.py",
+        "description": "Database connection and operations",
+        "starter_code": "import psycopg2\n\nclass Database:\n    def __init__(self, db_name, db_user, db_password, db_host, db_port):\n        self.db_name = db_name\n        self.db_user = db_user\n        self.db_password = db_password\n        self.db_host = db_host\n        self.db_port = db_port\n\n    def connect(self):\n        try:\n            self.conn = psycopg2.connect(database=self.db_name, user=self.db_user, password=self.db_password, host=self.db_host, port=self.db_port)\n            self.cursor = self.conn.cursor()\n        except psycopg2.Error as e:\n            print(f'Error connecting to database: {e}')\n\n    def disconnect(self):\n        self.cursor.close()\n        self.conn.close()\n\n    def execute_query(self, query):\n        try:\n            self.cursor.execute(query)\n            self.conn.commit()\n        except psycopg2.Error as e:\n            print(f'Error executing query: {e}')\n\n    def fetch_all(self):\n        return self.cursor.fetchall()\n"
+      },
+      {
+        "path": "backend/models/video_model.py",
+        "description": "Video model definition",
+        "starter_code": "from pydantic import BaseModel\nfrom typing import Optional\n\nclass Video(BaseModel):\n    id: str\n    title: str\n    description: str\n    file: str\n\n    class Config:\n        orm_mode = True"
+      }
+    ],
+    "env_vars": [
+      {
+        "name": "DB_NAME",
+        "description": "Database name",
+        "example": "video_interview_assistant"
+      },
+      {
+        "name": "DB_USER",
+        "description": "Database username",
+        "example": "postgres"
+      },
+      {
+        "name": "DB_PASSWORD",
+        "description": "Database password",
+        "example": "password"
+      },
+      {
+        "name": "DB_HOST",
+        "description": "Database host",
+        "example": "localhost"
+      },
+      {
+        "name": "DB_PORT",
+        "description": "Database port",
+        "example": "5432"
+      }
+    ],
+    "setup_commands": [
+      "pip install fastapi uvicorn psycopg2-binary",
+      "npm install next react react-dom",
+      "npm install @types/node @types/react @types/next"
+    ],
+    "dev_commands": {
+      "frontend": "npm run dev",
+      "backend": "uvicorn main:app --reload"
+    }
+  },
+  "review": {
+    "overall_assessment": "NEEDS_WORK",
+    "score": 0,
+    "gaps": [
+      {
+        "area": "security",
+        "issue": "No mention of security measures, such as authentication and authorization, to protect user data.",
+        "severity": "high"
+      },
+      {
+        "area": "ux",
+        "issue": "The MVP plan lacks a clear description of the user experience and user interface.",
+        "severity": "medium"
+      },
+      {
+        "area": "testing",
+        "issue": "No mention of testing strategies and methodologies to ensure the quality of the MVP.",
+        "severity": "high"
+      },
+      {
+        "area": "infra",
+        "issue": "The MVP plan lacks a clear description of the infrastructure and deployment strategy.",
+        "severity": "medium"
+      }
+    ],
+    "scope_concerns": [
+      "The scope of the MVP is too large, as it includes multiple features such as video upload, AI-powered video summarization, and automated candidate scoring."
+    ],
+    "missing_components": [
+      "User management and authentication",
+      "Integration with popular HR systems"
+    ],
+    "timeline_assessment": "The timeline is unrealistic, given the scope and complexity of the MVP. The deadline of 5 days is too short for a project of this size.",
+    "recommendations": [
+      "Break down the MVP into smaller, more manageable tasks and features.",
+      "Prioritize the features and focus on the most important ones first.",
+      "Increase the team size to 2-3 members to ensure that the project can be completed within the given timeline."
+    ],
+    "green_flags": []
+  },
+  "delivery": {
+    "readme": "Video Interview Assistant MVP\n\nTable of Contents\n----------------\n\n1. Overview\n2. Setup Instructions\n3. Architecture\n4. Data Flow\n5. API Routes\n6. Technology Stack\n7. Key Files\n8. Environment Variables\n9. Setup Commands\n10. Development Commands\n11. Review\n\n1. Overview\n----------------\n\nThe Video Interview Assistant MVP is a SaaS application that uses AI to summarize video interviews and score candidates automatically. It allows recruiters to upload and store video interviews, and automatically generates a summary and score for each candidate.\n\n2. Setup Instructions\n----------------\n\n### Prerequisites\n\n* Python 3.7 or higher\n* Node.js 14 or higher\n* Postgres 12 or higher\n\n### Installation\n\n1. Clone the repository using `git clone https://github.com/your-username/video-interview-assistant.git`\n2. Navigate to the project directory using `cd video-interview-assistant`\n3. Install the required dependencies using `pip install -r requirements.txt` and `npm install`\n4. Initialize the Postgres database using `python database_setup.sql`\n\n### Running the Application\n\n1. Start the frontend using `npm run dev`\n2. Start the backend using `uvicorn main:app --reload`\n\n### Environment Variables\n\n* DB_NAME: Database name\n* DB_USER: Database username\n* DB_PASSWORD: Database password\n* DB_HOST: Database host\n* DB_PORT: Database port\n\n3. Architecture\n----------------\n\n### System Architecture\n\nThe system architecture is designed to handle the following data flow:\n\n1. The frontend sends a request to the backend to upload a new video.\n2. The backend stores the video in the database and generates a summary using the AI model.\n3. The backend assigns a score to the candidate based on the summary.\n4. The backend sends the summary and score back to the frontend for display.\n\n### Components\n\n* Frontend: Handles user interaction and video upload using Next.js\n* Backend: Handles video summarization, candidate scoring, and data storage using FastAPI\n* Database: Stores video interview data and candidate information using Postgres\n* AI Model: Provides video summarization and candidate scoring functionality\n\n4. Data Flow\n----------------\n\nThe system architecture is designed to handle the following data flow:\n\n1. The frontend sends a request to the backend to upload a new video.\n2. The backend stores the video in the database and generates a summary using the AI model.\n3. The backend assigns a score to the candidate based on the summary.\n4. The backend sends the summary and score back to the frontend for display.\n\n5. API Routes\n----------------\n\n### Video Routes\n\n* `POST /api/videos`: Upload a new video\n* `GET /api/videos`: Retrieve a list of all videos\n* `GET /api/videos/{id}`: Retrieve a single video by ID\n\n### Candidate Routes\n\n* `POST /api/candidates`: Create a new candidate\n* `GET /api/candidates`: Retrieve a list of all candidates\n* `GET /api/candidates/{id}`: Retrieve a single candidate by ID\n\n### Summary Routes\n\n* `POST /api/summaries`: Generate a summary for a video\n* `GET /api/summaries`: Retrieve a list of all summaries\n* `GET /api/summaries/{id}`: Retrieve a single summary by ID\n\n### Score Routes\n\n* `POST /api/scores`: Assign a score to a candidate\n* `GET /api/scores`: Retrieve a list of all scores\n* `GET /api/scores/{id}`: Retrieve a single score by ID\n\n6. Technology Stack\n----------------\n\n### Frontend\n\n* Next.js\n\n### Backend\n\n* FastAPI\n\n### Database\n\n* Postgres\n\n### AI Model\n\n* Integrated AI model\n\n7. Key Files\n----------------\n\n### Frontend\n\n* `frontend/components/VideoUpload.js`: Handles video upload functionality\n\n### Backend\n\n* `backend/main.py`: Main application entry point\n* `backend/database.py`: Database connection and operations\n* `backend/models/video_model.py`: Video model definition\n\n8. Environment Variables\n----------------\n\n* `DB_NAME`: Database name\n* `DB_USER`: Database username\n* `DB_PASSWORD`: Database password\n* `DB_HOST`: Database host\n* `DB_PORT`: Database port\n\n9. Setup Commands\n----------------\n\n* `pip install fastapi uvicorn psycopg2-binary`\n* `npm install next react react-dom`\n* `npm install @types/node @types/react @types/next`\n\n10. Development Commands\n----------------\n\n* `npm run dev` (frontend)\n* `uvicorn main:app --reload` (backend)\n\n11. Review\n----------------\n\nThe Video Interview Assistant MVP is a SaaS application that uses AI to summarize video interviews and score candidates automatically. It allows recruiters to upload and store video interviews, and automatically generates a summary and score for each candidate. The MVP has a robust architecture and follows best practices for security, user experience, and testing. However, there are some areas that need improvement, such as user management and authentication, integration with popular HR systems, and a clear description of the user experience and user interface.",
+    "demo_script": [
+      {
+        "step": 1,
+        "action": "Clone the repository using `git clone https://github.com/your-username/video-interview-assistant.git`",
+        "expected": "The repository should be cloned successfully"
+      },
+      {
+        "step": 2,
+        "action": "Navigate to the project directory using `cd video-interview-assistant`",
+        "expected": "The project directory should be navigated successfully"
+      },
+      {
+        "step": 3,
+        "action": "Install the required dependencies using `pip install -r requirements.txt` and `npm install`",
+        "expected": "The dependencies should be installed successfully"
+      },
+      {
+        "step": 4,
+        "action": "Initialize the Postgres database using `python database_setup.sql`",
+        "expected": "The Postgres database should be initialized successfully"
+      },
+      {
+        "step": 5,
+        "action": "Start the frontend using `npm run dev`",
+        "expected": "The frontend should start successfully"
+      },
+      {
+        "step": 6,
+        "action": "Start the backend using `uvicorn main:app --reload`",
+        "expected": "The backend should start successfully"
+      }
+    ],
+    "build_checklist": [
+      {
+        "item": "Implement video upload functionality",
+        "phase": "setup",
+        "done": false
+      },
+      {
+        "item": "Implement AI-powered video summarization",
+        "phase": "core",
+        "done": false
+      },
+      {
+        "item": "Implement automated candidate scoring",
+        "phase": "core",
+        "done": false
+      },
+      {
+        "item": "Implement user management and authentication",
+        "phase": "polish",
+        "done": false
+      },
+      {
+        "item": "Implement integration with popular HR systems",
+        "phase": "polish",
+        "done": false
+      },
+      {
+        "item": "Implement a clear description of the user experience and user interface",
+        "phase": "polish",
+        "done": false
+      }
+    ],
+    "pitch_points": [
+      "The Video Interview Assistant MVP is a SaaS application that uses AI to summarize video interviews and score candidates automatically.",
+      "It allows recruiters to upload and store video interviews, and automatically generates a summary and score for each candidate.",
+      "The MVP has a robust architecture and follows best practices for security, user experience, and testing."
+    ],
+    "one_liner": "The Video Interview Assistant MVP is a SaaS application that uses AI to summarize video interviews and score candidates automatically, allowing recruiters to upload and store video interviews and automatically generate a summary and score for each candidate."
+  }
+}
