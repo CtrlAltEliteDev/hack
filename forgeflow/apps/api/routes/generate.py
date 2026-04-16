@@ -57,7 +57,7 @@ async def _run_and_store(project_id: str, req: GenerateRequest):
         update_artifacts(project_id, artifacts)
         update_project_status(project_id, "done")
     except Exception as e:
-        update_project_status(project_id, f"error: {str(e)[:200]}")
+        update_project_status(project_id, f"error: {str(e)[:500]}")
 
 
 @router.get("/stream/{project_id}")

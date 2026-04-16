@@ -3,7 +3,25 @@ set -e
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 
+# Free dev ports so a second ./start.sh does not hit "Address already in use".
+free_port() {
+  local port=$1
+  if command -v fuser >/dev/null 2>&1; then
+    fuser -k "${port}/tcp" 2>/dev/null || true
+  elif command -v lsof >/dev/null 2>&1; then
+    local pids
+    pids=$(lsof -ti ":${port}" 2>/dev/null) || true
+    if [ -n "$pids" ]; then
+      kill $pids 2>/dev/null || true
+    fi
+  fi
+}
+
 echo "==> ForgeFlow startup"
+echo "  Clearing listeners on ports 8000 and 3000 (if any)..."
+free_port 8000
+free_port 3000
+sleep 0.5
 
 # ---- Backend ----
 echo ""
