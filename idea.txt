@@ -1,0 +1,397 @@
+What to build
+
+Build a web app called something like ForgeFlow:
+
+“An AI engineering workflow system that turns an idea, ticket, or PRD into an execution-ready plan and starter implementation.”
+
+Core promise
+
+User gives:
+
+product idea / PRD / ticket
+preferred stack
+deadline / constraints
+
+App returns:
+
+scoped MVP
+architecture
+milestones
+DB schema
+API routes
+file/folder scaffold
+starter code pack
+README + demo script
+
+That is strong because it is not just chat. It creates deliverables.
+
+Why this is a good hackathon project
+
+It fits Track 1 very well because it is clearly an agentic workflow, not basic RAG. It also maps nicely to AMD’s setup because AMD Developer Cloud is built around direct access to Instinct MI300X GPUs, and AMD’s official docs currently highlight ROCm + vLLM as a supported path for LLM inference on those GPUs.
+
+Best tech stack
+Frontend
+Next.js
+TypeScript
+Tailwind
+shadcn/ui
+
+Why:
+
+fastest path to a polished demo
+easy dashboard/workflow UI
+good for file upload, step views, result panels
+Backend
+FastAPI
+Python 3.11+
+
+Why:
+
+strongest ecosystem for agents, model calls, orchestration, parsing
+easy integration with LangGraph and vLLM
+Agent orchestration
+LangGraph
+
+Why:
+LangGraph is designed for stateful, long-running workflows, with explicit state, nodes, edges, durability, and human-in-the-loop support. That fits your product much better than a loose chat loop.
+
+Inference
+vLLM on ROCm
+hosted on AMD Developer Cloud
+
+Why:
+AMD’s current ROCm docs specifically provide a ROCm-enabled vLLM Docker image optimized for inference on AMD Instinct GPUs including MI300X.
+
+Model
+
+Start with one good general model:
+
+Qwen
+or Llama
+
+The hackathon brief itself points people toward open models like Llama, DeepSeek, Mistral, and Qwen, so using one of those keeps you aligned. AMD also positions Developer Cloud for open-source AI workloads.
+
+Database
+Postgres
+pgvector if you want retrieval/memory
+
+Why:
+
+keeps architecture simple
+enough for project records, artifacts, prompts, embeddings
+Queue / async
+Redis
+optional background jobs later
+Observability
+app logs
+LangGraph/LangSmith style tracing if you add it
+The architecture
+High-level system
+Next.js Web App
+   |
+   v
+FastAPI Backend
+   |
+   +--> LangGraph Orchestrator
+   |       |
+   |       +--> Intake Agent
+   |       +--> PM Agent
+   |       +--> Architect Agent
+   |       +--> Scaffold Agent
+   |       +--> Reviewer Agent
+   |       +--> Delivery Agent
+   |
+   +--> Postgres / pgvector
+   |
+   +--> vLLM Server on AMD Developer Cloud
+Agent roles
+
+1. Intake Agent
+
+parses user input
+extracts product type, stack, timeline, features, constraints
+
+2. PM Agent
+
+defines MVP scope
+creates milestones
+decides what is in/out
+
+3. Architect Agent
+
+proposes system design
+chooses services, routes, schema, modules
+
+4. Scaffold Agent
+
+generates folder structure
+API contract
+starter files
+code stubs
+
+5. Reviewer Agent
+
+checks gaps
+flags unrealistic scope
+finds missing components / risks
+
+6. Delivery Agent
+
+packages outputs
+writes README
+creates demo script / build checklist
+Why this architecture is good
+
+Because you are not making “agents talking for no reason.”
+
+You are making a pipeline with clear business outputs.
+
+That matters a lot.
+
+LangGraph is a good fit here because it models workflows as graphs with shared state, nodes, and edges, so your system can be deterministic where needed and agentic where useful.
+
+What the user flow looks like
+Input
+
+User enters:
+
+“Build a recruiter SaaS that summarizes interviews”
+stack: Next.js + FastAPI + Postgres
+team size: 2
+deadline: 5 days
+Output
+
+System returns:
+
+MVP scope
+architecture
+milestone plan
+DB schema
+API routes
+starter repo structure
+code pack
+README
+demo plan
+
+That’s your “wow” moment.
+
+Roadmap to build
+Phase 1 — Day 1
+Goal
+
+Get the product skeleton working.
+
+Build:
+
+Next.js app shell
+FastAPI backend
+form to submit idea + stack + deadline
+basic LangGraph flow
+one LLM call through your chosen inference path
+
+Deliverable:
+
+user submits idea
+backend returns structured MVP scope
+Phase 2 — Day 2
+Goal
+
+Add real agent workflow.
+
+Build:
+
+Intake Agent
+PM Agent
+Architect Agent
+shared workflow state
+JSON outputs for:
+scope
+milestones
+architecture
+
+Deliverable:
+
+user gets a usable planning pack
+Phase 3 — Day 3
+Goal
+
+Generate implementation artifacts.
+
+Build:
+
+Scaffold Agent
+DB schema generator
+API route generator
+folder/file tree generator
+
+Deliverable:
+
+app produces execution-ready technical outputs
+Phase 4 — Day 4
+Goal
+
+Add quality and review loop.
+
+Build:
+
+Reviewer Agent
+risk analysis
+missing-feature detection
+“revise plan” flow
+
+Deliverable:
+
+outputs feel more trustworthy and less toy-like
+Phase 5 — Day 5
+Goal
+
+Make demo strong.
+
+Build:
+
+Delivery Agent
+README generation
+demo script generation
+polished UI
+export/download result pack
+
+Deliverable:
+
+hackathon-ready product demo
+MVP features only
+
+Do not overbuild.
+
+Ship these:
+
+idea input form
+multi-step agent execution
+structured output tabs:
+Scope
+Architecture
+Milestones
+Schema
+APIs
+Scaffold
+Risks
+README
+export results
+
+That is enough.
+
+Folder structure
+forgeflow/
+  apps/
+    web/                 # Next.js
+    api/                 # FastAPI
+  packages/
+    prompts/
+    schemas/
+  infra/
+    docker/
+Backend shape
+apps/api/
+  main.py
+  routes/
+    projects.py
+    generate.py
+  agents/
+    intake.py
+    pm.py
+    architect.py
+    scaffold.py
+    reviewer.py
+    delivery.py
+  graph/
+    workflow.py
+    state.py
+  services/
+    llm.py
+    storage.py
+Frontend shape
+apps/web/
+  app/
+    page.tsx
+    project/[id]/page.tsx
+  components/
+    project-form.tsx
+    run-workflow.tsx
+    output-tabs.tsx
+    artifact-panel.tsx
+Why this has an edge
+1. It is outcome-first
+
+Most people will build:
+
+chatbot
+RAG assistant
+generic agent demo
+
+You are building:
+
+idea -> execution pack
+
+That is much more tangible.
+
+2. It is broader than Cursor-like tools
+
+Cursor/Codex mostly live in the code-writing loop.
+Your product helps with:
+
+scope
+architecture
+milestones
+build order
+starter implementation
+demo readiness
+
+That is a different layer of value.
+
+3. It feels real
+
+Judges usually trust products that output:
+
+plans
+documents
+code artifacts
+structured workflow results
+
+more than “look, agents are chatting.”
+
+4. It matches your profile
+
+You have full-stack experience and multi-agent experience.
+So your edge is combining:
+
+orchestration
+useful product design
+polished UI
+believable outputs
+5. AMD fit is visible
+
+Using AMD Developer Cloud + ROCm + vLLM makes the compute story explicit instead of hidden. AMD’s official material emphasizes MI300X access, ROCm tooling, and preconfigured environments for inference and other AI workflows.
+
+Best one-line pitch
+
+ForgeFlow turns product ideas, tickets, and PRDs into execution-ready software plans and starter implementations using a multi-agent system powered by AMD Developer Cloud.
+
+My exact recommendation
+
+Use this stack:
+
+Next.js
+TypeScript
+Tailwind + shadcn
+FastAPI
+LangGraph
+vLLM on ROCm
+Qwen or Llama
+Postgres + pgvector
+AMD Developer Cloud
+
+This is the best balance of:
+
+speed
+credibility
+demo quality
+hackathon alignment

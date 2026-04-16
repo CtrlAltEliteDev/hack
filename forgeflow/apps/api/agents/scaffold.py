@@ -1,0 +1,45 @@
+import json
+from services.llm import chat
+from graph.state import WorkflowState
+
+SYSTEM = """You are a senior engineer generating a project scaffold.
+Return ONLY valid JSON with this exact shape:
+{
+  "folder_tree": "ASCII folder/file tree as a single string",
+  "key_files": [
+    {
+      "path": "relative/path/to/file.ext",
+      "description": "what this file does",
+      "starter_code": "actual starter code content as a string"
+    }
+  ],
+  "env_vars": [
+    {"name": "ENV_VAR_NAME", "description": "what it's for", "example": "example_value"}
+  ],
+  "setup_commands": ["npm install", "pip install -r requirements.txt", ...],
+  "dev_commands": {"frontend": "npm run dev", "backend": "uvicorn main:app --reload"}
+}
+For starter_code, write real, runnable code — not pseudocode. Include at least 4-6 key files."""
+
+async def scaffold_agent(state: WorkflowState) -> WorkflowState:
+    arch = state.get("architecture") or {}
+    scope = state.get("scope") or {}
+    user_msg = f"""
+Architecture: {json.dumps(arch, indent=2)}
+MVP scope: {json.dumps(scope, indent=2)}
+Stack: {state['stack']}
+
+Generate a complete project scaffold with real starter code.
+"""
+    raw = await chat([
+        {"role": "system", "content": SYSTEM},
+        {"role": "user", "content": user_msg},
+    ], temperature=0.4)
+
+    try:
+        clean = raw.strip().removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+        scaffold = json.loads(clean)
+    except Exception:
+        scaffold = {"raw": raw, "parse_error": True}
+
+    return {**state, "scaffold": scaffold, "current_step": "scaffold_done"}
